@@ -1,0 +1,579 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block account %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'users:logout' %}">
+            Logout
+        </a>
+    </li>
+{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+
+        <!-- Shortlisted Jobs -->
+{#        Below is the modal that drops down when a user clicks on the button "Shortlisted Jobs"#}
+
+        <div class="modal fade" id="shortlisted_jobs" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="form">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Shortlisted Jobs</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                {% for job in user.account.jobs.all %}
+                                    <div class="row">
+                                        <div class="col-10">
+                                            <a href="{% url 'jobs:search_job' 'jobs' job %}">{{ job }}</a>
+                                        </div>
+                                        <div class="col-2">
+                                            <a href="{% url 'users:remove_shortlisted' job.id %}" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col text-right">
+                                {% if user.account.dp %}
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <img class="img-fluid img-thumbnail" id="dp" src="{{ user.account.dp.url }}">
+                                        </div>
+                                        &nbsp;
+                                        <div class="col-12">
+                                            <button class="btn btn-primary btn-sm" id="change_dp"><i class="fa fa-gear"></i></button>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <img class="img-fluid img-thumbnail" id="dp" src="{% static 'home/img/chicken-thighs.jpg' %}">
+                                        </div>
+                                        &nbsp;
+                                        <div class="col-12">
+                                            <button class="btn btn-primary btn-sm" id="change_dp"><i class="fa fa-gear"></i></button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col">
+                                <h2>{{ user.username }}</h2>
+                                <p>{{ user.account.headline }}</p>
+                                <p>{{ user.account.school }}</p>
+                                <p>{{ user.account.country }}</p>
+                                <p>{{ user.account.summary }}</p>
+                            </div>
+                            <div class="col">
+                                <div class="table-responsive-sm" style="max-width: 80%">
+                                    <table class="table table-striped text-center">
+                                        <thead class="bg-primary text-light rounded">
+                                            <tr>
+                                                <th></th>
+                                                <th class="medium-column">Name</th>
+                                                <th class="medium-column">Size</th>
+                                                <th class="medium-column"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for media in user.media.all %}
+                                                <tr>
+                                                    <td><a href="{% url 'users:del_media' media.id %}" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a></td>
+                                                    <td class="medium-column">{{ media.filename }}</td>
+                                                    <td class="medium-column">{{ media.file.size }}kb</td>
+                                                    <td>
+                                                        <a href="{% url 'users:open_media' media.id %}" class="btn btn-sm btn-primary"><i class="fa fa-file"></i>&nbsp;Open</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col" id="dp_form">
+                                <div class="row">
+                                    <div class="col border" style="background-color: #9fcdff">
+                                        <form id="profile_pic" method="post" action="" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <label for="user_dp" class="col-form-label-sm"><h4>Profile Pic</h4></label>
+                                                <input required class="form-control form-control-sm" name="user_dp" placeholder="Change dp" type="file">
+                                            </div>
+                                        </form>
+                                        <button form="profile_pic" value="user_dp" type="submit" class="btn btn-secondary">Save</button>
+                                    </div>
+                                </div>
+                                <div class="row"></div>
+                                <div class="row"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                &nbsp;
+                                <div class="row">
+                                    <div class="col-6 border" style="padding: 5px; display: -webkit-box">
+                                        <form method="post" id="documents_form" enctype="multipart/form-data" action="{% url 'users:upload_documents' %}">
+                                            {% csrf_token %}
+                                            <div>
+                                                <label for="document">Upload Documents</label>
+                                                <input type="file" name="document" multiple>
+                                            </div>
+                                        </form>
+                                        <div>
+                                            <button type="submit" form="documents_form" class="btn btn-sm btn-dark">Upload</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 text-left">
+                                        <button type="button" id="update_profile" class="btn btn-labeled btn-primary" href="">
+                                            <span class="btn-label"><i class="fa fa-pencil"></i></span>&nbsp;Update
+                                        </button>
+                                    </div>
+                                    <div class="col-2 text-left">
+                                        <a href="" class="btn btn-primary btn-md" data-toggle="modal" data-target="#shortlisted_jobs" aria-hidden="true">Shortlisted Jobs</a>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row" id="complete_profile">
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col text-center">
+                                        <form class="border" method="post" enctype="multipart/form-data" id="update_profile_form">
+                                            {% csrf_token %}
+                                            <hr>
+                                            <div class="text-center" style="color: #17a2b8">
+                                                <h4>Update Account</h4>
+                                            </div>
+                                            <hr>
+                                            <div class="text-center">
+                                                <h3>Account Details</h3>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Headline</label>
+                                                <div class="col-md-8 inputGroupContainer">
+                                                    <div class="input-group"><span class="input-group-addon"></span><input id="headline" name="headline" placeholder="{{ user.account.headline }}" class="form-control" required value="" type="text"></div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="interests" class="col-md-4 control-label">Country</label>
+                                                <div class="col-md-8 inputGroupContainer">
+                                                    <select name="country">
+                                                        {% for country in countries %}
+                                                            <option {% if country == user.account.country %} selected="selected" {% endif %} value="{{ country }}">{{ country }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Hobbies</label>
+                                                <div class="col-md-8 inputGroupContainer">
+                                                    <div class="input-group"><span class="input-group-addon"></span><textarea name="hobbies" placeholder="{{ user.account.hobbies }}" class="form-control" required value="" type="text"></textarea></div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Summary</label>
+                                                <div class="col-md-8 inputGroupContainer">
+                                                    <div class="input-group"><span class="input-group-addon"></span><textarea name="summary" placeholder="{{ user.account.summary }}" class="form-control" required value="" type="text"></textarea></div>
+                                                </div>
+                                            </div>
+                                            <div class="text-center">
+                                                <button class="btn btn-primary btn-sm" id="submit_profile" type="submit" form="update_profile_form">
+                                                    Submit
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" type="reset" form="update_profile_form">
+                                                    Reset
+                                                </button>
+                                                <button id="cancel_update_profile" type="reset" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col">
+                                        <div class="text-center">
+                                            <br>
+                                            <h4 style="background-color: #53A3CD">Complete Profile</h4>
+                                        </div>
+                                        <div>
+                                            <table class="table table-striped">
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="1">
+                                                            <form method="post" class="well form-horizontal" id="complete_profile_form" action="{% url 'users:complete_profile' %}">
+                                                                {% csrf_token %}
+                                                                <fieldset>
+                                                                    <div class="form-group">
+                                                                        <label class="col-md-4 control-label">Address Line 1</label>
+                                                                        <div class="col-md-8 inputGroupContainer">
+                                                                            <div class="input-group"><span class="input-group-addon"><i class="fa fa-home"></i></span><input id="addressLine1" name="addressLine1" placeholder="{{ user.account.address_line_1 }}" class="form-control" required value="" type="text"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-md-4 control-label">Address Line 2</label>
+                                                                        <div class="col-md-8 inputGroupContainer">
+                                                                            <div class="input-group"><span class="input-group-addon"><i class="fa fa-home"></i></span><input id="addressLine2" name="addressLine2" placeholder="{{ user.account.address_line_2 }}" class="form-control" required value="" type="text"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-md-4 control-label">City</label>
+                                                                        <div class="col-md-8 inputGroupContainer">
+                                                                            <div class="input-group"><span class="input-group-addon"><i class="fa fa-building"></i></span><input id="city" name="city" placeholder="{{ user.account.city }}" class="form-control" required="true" value="" type="text"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-md-4 control-label">State/Province/Region</label>
+                                                                        <div class="col-md-8 inputGroupContainer">
+                                                                            <div class="input-group"><span class="input-group-addon"></span><input id="state" name="state" placeholder="{{ user.account.state }}" class="form-control" required="true" value="" type="text"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-md-4 control-label">Postal Code/ZIP</label>
+                                                                        <div class="col-md-8 inputGroupContainer">
+                                                                            <div class="input-group"><span class="input-group-addon"></span><input id="postcode" name="postcode" placeholder="{{ user.account.postal_code }}" class="form-control" required="true" value="" type="text"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-md-4 control-label">Email</label>
+                                                                        <div class="col-md-8 inputGroupContainer">
+                                                                            <div class="input-group"><span class="input-group-addon"><i class="fa fa-envelope"></i></span><input id="email" name="email" placeholder="{{ user.email }}" class="form-control" required="true" value="" type="text"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-md-4 control-label">Phone Number</label>
+                                                                        <div class="col-md-8 inputGroupContainer">
+                                                                            <div class="input-group"><span class="input-group-addon"><i class="fa fa-phone"></i></span><input id="phoneNumber" name="phoneNumber" placeholder="{{ user.account.phone_number }}" class="form-control" required="true" value="" type="text"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </form>
+                                                        </td>
+                                                     </tr>
+                                                    </tbody>
+                                                </table>
+                                                <br>
+                                            <hr>
+                                            <div class="text-center">
+                                                <button class="btn btn-primary btn-sm" type="submit" form="complete_profile_form">
+                                                    Submit
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" type="reset" form="complete_profile_form">
+                                                    Reset
+                                                </button>
+                                                <button id="cancel_complete_profile" type="reset" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 text-center experience" style="border: #17a2b8 solid 1px" data-url="{% url 'users:account' %}">
+                                &nbsp;
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-secondary" href="">Experience
+                                            <i class="fa fa-briefcase"></i>
+                                        </button>
+                                        <button id="add_experience" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        &nbsp;
+                                        <div class="table-responsive-sm" id="experiences_table">
+                                            <table class="table">
+                                                <tbody>
+                                                {% for experience in user.experiences.all %}
+                                                    <tr>
+                                                        <td scope="row">
+                                                            <strong>{{ experience.position }}</strong>
+                                                        </td>
+                                                        <td scope="row">
+                                                            {{ experience.role }}
+                                                        </td>
+                                                        <td>
+                                                            <button id="delete_experience" onclick="del_experience('{% url 'users:delete-experience' experience.id %}')" class="btn btn-sm btn-danger" type="button" data-url="{% url 'users:delete-experience' experience.id %}">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <p>Click <strong>+ <i class="fa fa-arrow-up"> above to add </i></strong></p>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div id="experiences_toggle" class="text-left">
+                                            <form id="experience_form" method="post" enctype="multipart/form-data" action="{% url 'users:add-experience' %}">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Position</label>
+                                                    <div class="col-md-8 inputGroupContainer">
+                                                        <div class="input-group"><span class="input-group-addon"></span><input name="position" placeholder="Job Position" class="form-control" required="true" value="" type="text"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Role</label>
+                                                    <div class="col-md-8 inputGroupContainer">
+                                                        <div class="input-group"><span class="input-group-addon"></span><textarea name="role" placeholder="Role Played" class="form-control" required="true" value="" type="text"></textarea></div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="text-center">
+                                                <button class="btn btn-primary btn-sm" id="submit_profile" type="submit" form="experience_form">
+                                                    Submit
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" type="reset" form="experience_form">
+                                                    Reset
+                                                </button>
+                                                <button id="cancel_experience" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                            &nbsp;
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                            <div class="col-6 text-center interests" style="border-top: #17a2b8 solid 1px; border-right: #17a2b8 solid 1px; border-bottom: #17a2b8 solid 1px" data-url="{% url 'users:account' %}">
+                                &nbsp;
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-secondary" href="">Interests
+                                            <i class="fa fa-lightbulb-o"></i>
+                                        </button>
+                                        <button id="add_interests" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        &nbsp;
+                                        <div class="table-responsive-sm" id="interests_table">
+                                            <table class="table">
+                                                <tbody>
+                                                {% for interest in user.account.interests.all %}
+                                                    <tr>
+                                                        <td scope="row">
+                                                            <strong>{{ interest.title }}</strong>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-danger" type="button" onclick="del_interest('{% url 'users:delete-interest' interest.id %}')">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <p>Click <strong>+ <i class="fa fa-arrow-up" to add></i> </strong>above to add</p>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div id="interests_toggle">
+                                            <form id="interests_form" method="post" enctype="multipart/form-data" action="{% url 'users:add-interest' %}">
+                                                {% csrf_token %}
+                                                <div class="table-responsive-sm">
+                                                    <table class="table">{{ interests_form.as_table }}</table>
+                                                </div>
+                                            </form>
+                                            <div class="text-center">
+                                                <button class="btn btn-primary btn-sm" id="submit_profile" type="submit" form="interests_form">
+                                                    Submit
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" type="reset" form="interests_form">
+                                                    Reset
+                                                </button>
+                                                <button id="cancel_interests" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                            &nbsp;
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center skills" style="border-left: #17a2b8 solid 1px; border-bottom: #17a2b8 solid 1px; border-right: #17a2b8 solid 1px" data-url="{% url 'users:account' %}">
+                                &nbsp;
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-secondary" href="">Skills
+                                            <i class="fa fa-magic"></i>
+                                        </button>
+                                        <button id="add_skills" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        &nbsp;
+                                        <div class="table-responsive-sm" id="skills_table">
+                                            <table class="table">
+                                                <tbody>
+                                                {% for skill in user.skills.all %}
+                                                    <tr>
+                                                        <td scope="row">
+                                                            <strong>{{ skill.title }}</strong>
+                                                        </td>
+                                                        <td scope="row">
+                                                            {{ skill.about }}
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-danger" type="button" onclick="del_skill('{% url 'users:delete-skill' skill.id %}')">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <p>Click <strong>+ <i class="fa fa-arrow-up" to add></i> </strong>above to add</p>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div id="skills_toggle">
+                                            <form id="skills_form" method="post" enctype="multipart/form-data" action="{% url 'users:add-skill' %}">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Title</label>
+                                                    <div class="col-md-8 inputGroupContainer">
+                                                        <div class="input-group"><span class="input-group-addon"></span><input name="title" placeholder="Title" class="form-control" required="true" value="" type="text"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">About</label>
+                                                    <div class="col-md-8 inputGroupContainer">
+                                                        <div class="input-group"><span class="input-group-addon"></span><textarea name="about" placeholder="About" class="form-control" required="true" value="" type="text"></textarea></div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="text-center">
+                                                <button class="btn btn-primary btn-sm" id="submit_profile" type="submit" form="skills_form">
+                                                    Submit
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" type="reset" form="skills_form">
+                                                    Reset
+                                                </button>
+                                                <button id="cancel_skills" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                            &nbsp;
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                            <div class="col-6 text-center education" style="border-right: #17a2b8 solid 1px; border-bottom: #17a2b8 solid 1px " data-url="{% url 'users:account' %}">
+                                &nbsp;
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-secondary" href="">Education
+                                            <i class="fa fa-book"></i>
+                                        </button>
+                                        <button id="add_education" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col education">
+                                        &nbsp;
+                                        <div class="table-responsive-sm" id="education_table">
+                                            <table class="table">
+                                                <tbody>
+                                                {% for education in user.education.all %}
+                                                    <tr>
+                                                        <td scope="row">
+                                                            <strong>{{ education.school }}</strong>
+                                                        </td>
+                                                        <td scope="row">
+                                                            {{ education.degree }}
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-danger" type="button" onclick="del_education('{% url 'users:delete-education' education.id %}')">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <p>Click <strong>+ <i class="fa fa-arrow-up" to add></i> </strong>above to add</p>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div id="education_toggle">
+                                            <form id="education_form" method="post" enctype="multipart/form-data" action="{% url 'users:add-education' %}">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">School</label>
+                                                    <div class="col-md-8 inputGroupContainer">
+                                                        <div class="input-group"><span class="input-group-addon"></span><input name="school" placeholder="school" class="form-control" required="true" value="" type="text"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Degree</label>
+                                                    <div class="col-md-8 inputGroupContainer">
+                                                        <div class="input-group"><span class="input-group-addon"></span><input name="degree" placeholder="Bsc, Masters" class="form-control" required="true" value="" type="text"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Grade</label>
+                                                    <div class="col-md-8 inputGroupContainer">
+                                                        <div class="input-group"><span class="input-group-addon"></span><input name="grade" placeholder="Grade" class="form-control" required="true" value="" type="text"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Activities</label>
+                                                    <div class="col-md-8 inputGroupContainer">
+                                                        <div class="input-group"><span class="input-group-addon"></span><textarea name="activities" placeholder="Activities" class="form-control" required="true" value="" type="text"></textarea></div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="text-center">
+                                                <button class="btn btn-primary btn-sm" id="submit_profile" type="submit" form="education_form">
+                                                    Submit
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" type="reset" form="education_form">
+                                                    Reset
+                                                </button>
+                                                <button id="cancel_education" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                            &nbsp;
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,18 @@
+Input/Output
+
+machine readable i/o - Scanners, 
+Communication i/o - modem(modulation demodulation), mouse
+
+check msdos
+
+programmed i/o
+
+
+statuses: On/off ready wait
+
+Causes of cpu interrupts
+error
+power blackout
+higher priority task
+
+

@@ -1,0 +1,96 @@
+Drawbacks of using machine language
+
+a) Because of the primitive nature of machine instructions, machine-code programming is both tedious and error prone.
+b) For the same reason, machine-code programs are difficult to understand and modify.
+c) Programming is a time consuming and expensive business. It would be a great saving to be able to use the same program on different computers, but a machine-code program is specific to one model of computer and will not work on any other.
+*****************************************************************************
+Programs involved in translation of a high level language program
+	-Translator program, or compiler; 
+	-The source program written in a high level programming language
+	-The equivalent machine code or object program. 
+
+******************************************************************************
+A high level programming language is run in two distinct stages:
+	a) Compilation. The high level programming language compiler is brought into store and obeyed. It causes the computer to read the source program, check it for errors, and convert it into the
+corresponding object program.
+	b) Execution. The object program resulting from stage (1) above is brought into store. It is obeyed in turn and reads input, performs computations, and writes output, in exactly the manner specified by the High level language source program. 
+Recompilation is needed only when the source program is changed.
+
+The compilation phase, during which the program is translated from source code to object code, is often called compile time. The execution phase, when the object program is running, is often called run time or execution time.
+
+********************************************************************************
+Qualities of a good computer program:
+	-> The program must be correct.
+	-> The program must be efficient.
+	-> The program must be easy to modify and thus must be readable
+
+*********************************************************************************
+Stepwise refinement or Top-down program design. 
+
+This is breaking a problem down into a set of smaller sub problems. Assume for the moment that each of these sub problems will eventually be solved. Then we have achieved an outline solution to the original problem. We now examine each of
+the sub problems in turn. If a sub problem is trivial, then we can write down its solution directly. If a sub problem is non-trivial, then we break it down further, into a set of smaller sub problems. If all the new sub problems can eventually be solved, then we have achieved a more detailed outline solution. We repeat the refinement process as long as necessary to reduce the original problem down to trivial sub problems. This completes the solution of the original problem.
+
+***************************************************************************
+
+Qualities of a good methodical programming technique
+
+	a) Modularity. A program is said to be modular if its various components are relatively independent of each other. Choose refinements whose components interact as little as possible.This reduces the complexity of the refinements to be made at the next level down.
+	b) Localization. A program displays good localization when related statements are written close to each other in the text. This improves readability by reducing the need to scan back and forth through a program to see how things connect together.
+	c) Consistency. When you have to the same sort of thing several times, do it the same way on each occasion (unless there is good reason to vary).
+	d) Delayed decisions. Choose refinements which incorporate only those design 	decisions that cannot be postponed. This avoids committing the design prematurely to specific implementation ideas, increases the ease with which modifications can subsequently be made and reduces the distracting effect of minutiae.
+	e) Simplicity. It is very difficult to keep in mind more than about half a dozen facts or inter-relationships. Avoid overloading yourself with complex refinements and this will reduce the likelihood of confusion and error.
+
+******************************************************************************
+
+Types of errors
+
+1) Syntax errors. A syntax error means that the program or part of it is ill formed; it does not follow the grammatical rules of the programming language. Syntax errors are discovered at compile time by the compiler which enforces the grammatical rules of the programming language.
+2) Semantic errors. A semantic error occurs when the program is syntactically correct but the logic or structure of the program is wrong. A popular example is dividing a number by zero, where as the syntax is not wrong, dividing by zero will produce an error that the compiler will not detect.Most Semantic errors are not discoverable at compile time but will be discovered at run time.
+
+*******************************************************************************
+
+PDLC
+
+***ddctdi***
+
+define
+design
+code
+test
+document
+implement
+
+******************************************************************************
+Design Tools in PDLC
+
+a) Structure charts. A structure chart, also called a hierarchy chart, shows the top-down design of a program. Each box in the chart indicates a task that the program must accomplish.
+b) Algorithms. An algorithm is a step by step description of how to arrive at a solution
+c) Flowcharts. A flowchart is a diagram that shows the logic of the program. 
+d) Pseudocode. Pseudocode is an algorithm expressed in a programming language like construct but is not the actual programming language.
+
+**************************************************************************
+
+A logical error is a mistake that the programmer made while designing the solutions to the problem. A program development tool, such as a compiler, cannot detect these errors.
+
+Test data - A set of input data for which the output is known
+
+**************************************************************************************
+
+Modules should observe the following rules:
+a) Each module should contain only one program function.
+b) There should only be one entry point and one exit point in each module.
+**************************************************************************************
+
+Curly brackets in C are used to group statements together as in a function, or in the body of a
+loop. Such a grouping is known as a compound statement or a block.
+
+Functions make the program shorter, easier to read, and simplifies future maintenance
+of the program. They can also be reused
+
+a variable declaration reserves and names an area in memory at run time to hold a value of particular type
+
+An array is a collection of variables of the same type.
+
+n operator is a function which is applied to values to give a result.
+***************************************************************************************
+
